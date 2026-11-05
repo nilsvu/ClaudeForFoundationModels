@@ -22,6 +22,7 @@ public struct ClaudeExecutor: LanguageModelExecutor {
     public let fixedEffort: ClaudeModel.Effort?
     public let fallbacks: ClaudeFallbacks
     public let userProfileID: String?
+    public let promptCache: ClaudePromptCache
 
     public init(
       model: ClaudeModel,
@@ -31,7 +32,8 @@ public struct ClaudeExecutor: LanguageModelExecutor {
       timeout: TimeInterval,
       fixedEffort: ClaudeModel.Effort? = nil,
       fallbacks: ClaudeFallbacks = [],
-      userProfileID: String? = nil
+      userProfileID: String? = nil,
+      promptCache: ClaudePromptCache = .fiveMinutes
     ) {
       self.model = model
       self.baseURL = baseURL
@@ -41,6 +43,7 @@ public struct ClaudeExecutor: LanguageModelExecutor {
       self.fixedEffort = fixedEffort
       self.fallbacks = fallbacks
       self.userProfileID = userProfileID
+      self.promptCache = promptCache
     }
   }
 
@@ -130,7 +133,8 @@ public struct ClaudeExecutor: LanguageModelExecutor {
         model: configuration.model,
         fixedEffort: configuration.fixedEffort,
         serverTools: configuration.serverTools,
-        fallbacks: configuration.fallbacks
+        fallbacks: configuration.fallbacks,
+        promptCache: configuration.promptCache
       )
       var translator = EventTranslator()
       var request = built.request

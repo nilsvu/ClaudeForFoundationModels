@@ -22,7 +22,8 @@ enum RequestBuilder {
     model: ClaudeModel,
     fixedEffort: ClaudeModel.Effort? = nil,
     serverTools: Set<ClaudeServerTool> = [],
-    fallbacks: ClaudeFallbacks = []
+    fallbacks: ClaudeFallbacks = [],
+    promptCache: ClaudePromptCache = .fiveMinutes
   ) throws -> Built {
     var system: String?
 
@@ -131,7 +132,7 @@ enum RequestBuilder {
       tools: allTools.isEmpty ? nil : allTools,
       toolChoice: toolChoice,
       thinking: thinkingConfig,
-      cacheControl: .init(),
+      cacheControl: .init(ttl: promptCache == .oneHour ? .oneHour : nil),
       outputConfig: effort.map { OutputConfig(effort: $0) },
       stream: true
     )

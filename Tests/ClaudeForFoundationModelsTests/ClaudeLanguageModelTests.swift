@@ -66,6 +66,14 @@ import DeviceCheck
     )
   }
 
+  @Test func `the prompt cache TTL reaches the executor configuration`() {
+    let byDefault = ClaudeLanguageModel(name: .sonnet4_6, auth: .apiKey("k"))
+    #expect(byDefault.executorConfiguration.promptCache == .fiveMinutes)
+
+    let anHour = ClaudeLanguageModel(name: .sonnet4_6, auth: .apiKey("k"), promptCache: .oneHour)
+    #expect(anHour.executorConfiguration.promptCache == .oneHour)
+  }
+
   // Each fallback gets the closest effort level it accepts, so the fixed
   // effort is checked against the requested model alone.
   @Test func `a fixed effort is checked against the model, not its fallbacks`() {

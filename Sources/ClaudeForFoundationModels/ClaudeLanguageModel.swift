@@ -30,6 +30,7 @@ public struct ClaudeLanguageModel: Sendable {
   public let fixedEffort: ClaudeModel.Effort?
   public let fallbacks: ClaudeFallbacks
   public let userProfileID: String?
+  public let promptCache: ClaudePromptCache
   let authMode: AuthMode
 
   /// - Parameters:
@@ -62,6 +63,8 @@ public struct ClaudeLanguageModel: Sendable {
   ///   - serverTools: Tools that execute on Anthropic's infrastructure
   ///     (web search, code execution). Distinct from the framework's
   ///     `tools:` array, which the framework invokes client-side.
+  ///   - promptCache: How long the API keeps the prompt cache after its last
+  ///     use. See ``ClaudePromptCache``.
   ///   - baseURL: API endpoint. Override to point at a developer-run proxy
   ///     that adds authentication server-side (use with ``AuthMode/proxied``).
   ///     Credentials are only ever sent to this scheme, host, and port: a
@@ -73,6 +76,7 @@ public struct ClaudeLanguageModel: Sendable {
     fixedEffort: ClaudeModel.Effort? = nil,
     fallbacks: ClaudeFallbacks = [],
     serverTools: Set<ClaudeServerTool> = [],
+    promptCache: ClaudePromptCache = .fiveMinutes,
     baseURL: URL = ClaudeLanguageModel.defaultBaseURL,
     timeout: TimeInterval = 60
   ) {
@@ -91,6 +95,7 @@ public struct ClaudeLanguageModel: Sendable {
     self.fallbacks = fallbacks
     self.userProfileID = userProfileID
     self.serverTools = serverTools
+    self.promptCache = promptCache
     self.baseURL = baseURL
     self.timeout = timeout
   }
@@ -142,7 +147,8 @@ extension ClaudeLanguageModel: LanguageModel {
       timeout: timeout,
       fixedEffort: fixedEffort,
       fallbacks: fallbacks,
-      userProfileID: userProfileID
+      userProfileID: userProfileID,
+      promptCache: promptCache
     )
   }
 }

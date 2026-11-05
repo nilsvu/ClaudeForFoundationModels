@@ -9,6 +9,21 @@ import Testing
 @testable import ClaudeForFoundationModels
 
 @Suite struct RequestBuilderTests {
+  @Test func `the prompt cache keeps the API's default TTL unless asked for an hour`() throws {
+    let transcript = Transcript(entries: [
+      .prompt(.init(segments: [.text(.init(content: "Hello"))]))
+    ])
+    let byDefault = try RequestBuilder.build(from: .make(transcript: transcript), model: .sonnet4_6)
+    #expect(byDefault.request.cacheControl == CacheControl())
+
+    let anHour = try RequestBuilder.build(
+      from: .make(transcript: transcript),
+      model: .sonnet4_6,
+      promptCache: .oneHour
+    )
+    #expect(anHour.request.cacheControl == CacheControl(ttl: .oneHour))
+  }
+
   @Test func `instructions become the system prompt`() throws {
     let transcript = Transcript(entries: [
       .instructions(.init(segments: [.text(.init(content: "Be concise."))], toolDefinitions: [])),
